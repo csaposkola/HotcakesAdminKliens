@@ -1,0 +1,93 @@
+/* public/style.css */
+
+/* --- Egyedi Betűtípusok --- */
+@font-face {
+    font-family: 'SajatBetutipus'; /* Választott név a betűtípus családnak */
+    src: url('fonts/SajatBetutipus-Regular.ttf') format('truetype');
+    font-weight: normal; /* vagy 400 */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SajatBetutipus'; /* Ugyanaz a név! */
+    src: url('fonts/SajatBetutipus-Bold.ttf') format('truetype');
+    font-weight: bold; /* vagy 700 */
+    font-style: normal;
+}
+
+/* --- Téma Felülírások (Bootstrap változók) --- */
+:root {
+    /* Bootstrap Téma Színek Felülírása (MS paletta alapján) */
+    --bs-primary: #187ABA; /* Kék */
+    --bs-primary-rgb: 24, 122, 186;
+    --bs-secondary: #4695C8; /* Kék-80% */
+    --bs-secondary-rgb: 70, 149, 200;
+
+    --bs-success: #3EB661; /* Jáde */
+    --bs-success-rgb: 62, 182, 97;
+    --bs-info: #4CCACD; /* Aqua */
+    --bs-info-rgb: 76, 202, 205;
+    --bs-warning: #FA823C; /* Tangerine */
+    --bs-warning-rgb: 250, 130, 60;
+    --bs-danger: #D3086F; /* Berry */
+    --bs-danger-rgb: 211, 8, 111;
+
+    --bs-light: #D1E4F1; /* Kék-20% (halvány háttér) */
+    --bs-light-rgb: 209, 228, 241;
+    --bs-dark: #002B51; /* Navy (sötét elemek/szöveg) */
+    --bs-dark-rgb: 0, 43, 81;
+
+    /* Body Színek Felülírása */
+    --bs-body-color: #335574; /* Navy-80% (enyhébb szöveg) */
+    --bs-body-color-rgb: 51, 85, 116;
+    --bs-body-bg: #FFFFFF; /* Fehér háttér */
+    --bs-body-bg-rgb: 255, 255, 255;
+
+    /* Link Szín Felülírása */
+    --bs-link-color: var(--bs-primary);
+    --bs-link-color-rgb: var(--bs-primary-rgb);
+    /* --bs-link-hover-color: #0d6efd;  Opcionális hover szín */
+
+    /* Border Szín Felülírása */
+    --bs-border-color: #CCD5DC; /* Navy-20% */
+    --bs-border-color-translucent: rgba(0, 43, 81, 0.175); /* Áttetsző sötét */
+
+
+    /* Egyedi Betűtípus Család Alkalmazása Bootstrap változóval */
+    --bs-body-font-family: 'SajatBetutipus', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* Tartalék betűtípusok */
+
+    /* Opcionális: Gomb fókusz árnyék szín */
+    --bs-btn-focus-shadow-rgb: var(--bs-primary-rgb);
+}
+
+/* --- Betűtípus Alkalmazás --- */
+/* A Body font-family már a --bs-body-font-family változóval van kezelve */
+
+h1, h2, h3, h4, h5, h6, strong, b, .fw-bold {
+    font-weight: bold; /* Biztosítja a félkövér változat használatát */
+}
+
+/* Komponensek örököljék a body betűtípust */
+.btn, .form-control, .form-select, .alert, .nav-link, .list-group-item, label, th, td /* stb. */ {
+    font-family: inherit;
+}
+
+/* --- Egyedi Finomítások --- */
+/* Stílus az aktív navigációs gombhoz */
+nav .btn.nav-link.active {
+    background-color: rgba(var(--bs-primary-rgb), 0.1); /* Halvány primary háttér */
+    color: var(--bs-primary);
+    border-bottom: 2px solid var(--bs-primary);
+    border-radius: 0;
+    font-weight: bold;
+}
+nav .btn.nav-link {
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+}
+
+/* Kisebb gombok a táblázat műveleteknél */
+.action-button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}

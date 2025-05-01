@@ -1,0 +1,29 @@
+[
+  {
+    "templateId": "TPL-ALAPSORF-4H",
+    "name": "Alap Sörfőzés (4 óra)",
+    "baseSku": "TANF-ALAPSORF-4H",
+    "durationHours": 4,
+    "defaultDescription": "Ismerkedj meg a sörfőzés alapjaival ezen a 4 órás tanfolyamon.",
+    "defaultPrice": 29990.0,
+    "defaultInventoryMode": 100
+  },
+  {
+    "templateId": "TPL-HALADOSORF-8H",
+    "name": "Haladó Sörfőzés (8 óra)",
+    "baseSku": "TANF-HALADOSORF-8H",
+    "durationHours": 8,
+    "defaultDescription": "Mélysítsd el tudásodat a haladó technikákról ezen a 8 órás képzésen.",
+    "defaultPrice": 49990.0,
+    "defaultInventoryMode": 100
+  },
+  {
+    "templateId": "TPL-SPECIAL-6H",
+    "name": "Speciális Sörök (6 óra)",
+    "baseSku": "TANF-SPECIAL-6H",
+    "durationHours": 6,
+    "defaultDescription": "Fókuszban a speciális sörök elkészítése, 6 órás intenzív kurzus.",
+    "defaultPrice": 39990.0,
+    "defaultInventoryMode": 100
+  }
+]
