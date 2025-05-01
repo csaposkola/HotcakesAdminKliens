@@ -42,6 +42,8 @@
     "files": [
       "**/*",
       "!**/*.{iml,hprof,orig,pyc,pyo,rbc}",
+      "!**/*.blockmap",
+      "!**/*.yml",
       "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
       "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
       "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,__pycache__,thumbs.db,.gitignore,.gitattributes}"
