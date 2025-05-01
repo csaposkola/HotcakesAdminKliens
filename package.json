@@ -49,6 +49,10 @@
     "linux": {
       "target": "AppImage",
       "icon": "public/icon.png"
+    },
+    "scripts": {
+      "version": "git add -A",
+      "postversion": "git push && git push --tags"
     }
   }
 }
