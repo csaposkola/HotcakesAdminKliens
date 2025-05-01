@@ -9,7 +9,9 @@
     "electron": "electron .",
     "build": "electron-builder",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "version": "git add -A",
+    "postversion": "git push && git push --tags"
   },
   "author": "",
   "license": "ISC",
@@ -49,10 +51,6 @@
     "linux": {
       "target": "AppImage",
       "icon": "public/icon.png"
-    },
-    "scripts": {
-      "version": "git add -A",
-      "postversion": "git push && git push --tags"
     }
   }
 }
