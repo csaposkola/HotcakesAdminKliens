@@ -1,6 +1,6 @@
 {
   "name": "hcadmin",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "HotCakes kurzus- és tanfolyamkezelő",
   "main": "main.js",
   "scripts": {
