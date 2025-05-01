@@ -22,6 +22,16 @@
         .modal-body label { margin-top: 0.5rem; }
         /* JSON szerkesztő betűtípus */
         #template-json-editor { font-family: monospace; white-space: pre; }
+        /* Highlight effect for form */
+        .highlight-form {
+            animation: highlight-animation 1s ease;
+        }
+
+        @keyframes highlight-animation {
+            0% { box-shadow: 0 0 0 0 rgba(var(--bs-primary-rgb), 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(var(--bs-primary-rgb), 0.4); }
+            100% { box-shadow: 0 0 0 0 rgba(var(--bs-primary-rgb), 0); }
+        }
     </style>
 </head>
 <body>
@@ -98,7 +108,8 @@
         <h2>Tanfolyam Sablonok</h2>
         <p>A sablonok a <code>templates.json</code> fájlban vannak kezelve.</p>
         <button id="refresh-templates" class="btn btn-sm btn-outline-secondary me-2">Lista Frissítése</button>
-        <button id="edit-templates-btn" class="btn btn-sm btn-primary">Sablonok Szerkesztése (JSON)</button>
+        <button id="edit-templates-btn" class="btn btn-sm btn-primary me-2">JSON Szerkesztés</button>
+        <button id="edit-templates-visual-btn" class="btn btn-sm btn-success">Vizuális Szerkesztés</button>
         <div id="templates-status" class="alert mt-3" role="alert" style="display: none;"></div>
 
         <!-- Sablon Lista (megjelenítéshez) -->
@@ -115,6 +126,85 @@
             <div class="card-footer">
                 <button id="save-templates-btn" class="btn btn-success">Mentés</button>
                 <button id="cancel-edit-templates-btn" class="btn btn-secondary ms-2">Mégse</button>
+            </div>
+        </div>
+
+        <!-- Visual Template Editor -->
+        <div id="visual-template-editor" class="card mt-3" style="display: none;">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Sablonok Vizuális Szerkesztése</h4>
+                <div>
+                    <button id="add-template-btn" class="btn btn-sm btn-light">+ Új Sablon</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="visual-editor-status" class="alert mt-3 mb-3" role="alert" style="display: none;"></div>
+
+                <!-- Template List -->
+                <div id="visual-template-list" class="mb-4"></div>
+
+                <!-- Template Edit Form -->
+                <div id="template-edit-form" class="card border-primary">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Sablon Szerkesztése</h5>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="template-form-id" class="form-label">Sablon Azonosító*:</label>
+                                    <input type="text" id="template-form-id" class="form-control" required>
+                                    <small class="form-text text-muted">Egyedi azonosító, pl. "TPL-ALAPSORF-4H"</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="template-form-name" class="form-label">Sablon Neve*:</label>
+                                    <input type="text" id="template-form-name" class="form-control" required>
+                                    <small class="form-text text-muted">Pl. "Alap Sörfőzés (4 óra)"</small>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="template-form-sku" class="form-label">Alap SKU*:</label>
+                                    <input type="text" id="template-form-sku" class="form-control" required>
+                                    <small class="form-text text-muted">Pl. "TANF-ALAPSORF-4H"</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="template-form-duration" class="form-label">Időtartam (óra):</label>
+                                    <input type="number" id="template-form-duration" class="form-control" min="1" value="4">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="template-form-description" class="form-label">Alapértelmezett Leírás:</label>
+                                <textarea id="template-form-description" class="form-control" rows="3"></textarea>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="template-form-price" class="form-label">Alapértelmezett Ár (Ft):</label>
+                                    <input type="number" id="template-form-price" class="form-control" min="0" step="100" value="29990">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="template-form-inventory-mode" class="form-label">Készlet Mód:</label>
+                                    <select id="template-form-inventory-mode" class="form-select">
+                                        <option value="100" selected>Standard (100)</option>
+                                        <option value="200">Nem követett (200)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-primary">Sablon Mentése</button>
+                                <button type="button" class="btn btn-secondary ms-2" onclick="clearTemplateEditForm()">Űrlap Törlése</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button id="save-visual-templates-btn" class="btn btn-success">Összes Sablon Mentése</button>
+                <button id="cancel-visual-editor-btn" class="btn btn-secondary ms-2">Mégse</button>
             </div>
         </div>
     </div>
@@ -197,5 +287,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <!-- Saját App JS -->
 <script src="app.js"></script>
+<!-- Template Editor JS -->
+<script src="template-editor.js"></script>
 </body>
 </html>
