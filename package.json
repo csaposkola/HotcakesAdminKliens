@@ -1,6 +1,6 @@
 {
   "name": "hcadmin",
-  "version": "1.0.3",
+  "version": "1.0.0",
   "description": "HotCakes kurzus- és tanfolyamkezelő",
   "main": "main.js",
   "scripts": {
@@ -33,6 +33,12 @@
     "directories": {
       "output": "dist"
     },
+    "publish": [
+      {
+        "provider": "github",
+        "releaseType": "release"
+      }
+    ],
     "files": [
       "**/*",
       "!**/*.{iml,hprof,orig,pyc,pyo,rbc}",
