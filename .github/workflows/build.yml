@@ -23,9 +23,6 @@ jobs:
           
       - name: Install dependencies
         run: npm ci
-      - name: Filter unwanted files
-        run: |
-          rm -f dist/*.blockmap dist/*.yml
       - name: Build and release
         uses: samuelmeuli/action-electron-builder@v1
         with:

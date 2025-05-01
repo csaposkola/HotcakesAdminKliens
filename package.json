@@ -33,12 +33,11 @@
     "directories": {
       "output": "dist"
     },
-    "publish": [
-      {
-        "provider": "github",
-        "releaseType": "release"
-      }
-    ],
+    "publish": {
+      "provider": "github",
+      "releaseType": "release",
+      "publishAutoUpdate": false
+    },
     "files": [
       "**/*",
       "!**/*.{iml,hprof,orig,pyc,pyo,rbc}",
