@@ -1,6 +1,6 @@
 {
-  "name": "hcadmin",
-  "version": "1.0.3",
+  "name": "hckurzusadmin",
+  "version": "1.0.0",
   "description": "HotCakes kurzus- és tanfolyamkezelő",
   "main": "main.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "electron-builder": "^26.0.12"
   },
   "build": {
-    "appId": "com.yourcompany.hotcakes-admin",
+    "appId": "com.csaposkola.hotcakes-admin",
     "productName": "HotCakes Admin",
     "directories": {
       "output": "dist"
