@@ -1,15 +1,18 @@
 {
-  "name": "hcadmin",
-  "version": "1.0.0",
+  "name": "hckurzusadmin",
+  "version": "1.0.1",
   "description": "HotCakes kurzus- és tanfolyamkezelő",
   "main": "main.js",
   "scripts": {
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "electron": "electron .",
+    "dev": "cross-env NODE_ENV=development electron .",
     "build": "electron-builder",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "version": "git add -A",
+    "postversion": "git push && git push --tags"
   },
   "author": "",
   "license": "ISC",
@@ -22,21 +25,50 @@
     "puppeteer": "^24.7.2"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "electron": "^36.0.1",
     "electron-builder": "^26.0.12"
   },
   "build": {
-    "appId": "com.yourcompany.hotcakes-admin",
+    "appId": "com.csaposkola.hotcakes-admin",
     "productName": "HotCakes Admin",
     "directories": {
       "output": "dist"
     },
+    "publish": [
+      {
+        "provider": "github",
+        "releaseType": "release"
+      }
+    ],
     "files": [
       "**/*",
       "!**/*.{iml,hprof,orig,pyc,pyo,rbc}",
       "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
       "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
       "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,__pycache__,thumbs.db,.gitignore,.gitattributes}"
+    ],
+    "extraResources": [
+      {
+        "from": "public",
+        "to": "app/public"
+      },
+      {
+        "from": "server.js",
+        "to": "app/server.js"
+      },
+      {
+        "from": "templates.json",
+        "to": "app/templates.json"
+      },
+      {
+        "from": "settings.json",
+        "to": "app/settings.json"
+      },
+      {
+        "from": "inventoryMap.json",
+        "to": "app/inventoryMap.json"
+      }
     ],
     "win": {
       "target": "nsis",

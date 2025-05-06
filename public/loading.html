@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="hu" data-bs-theme="dark"> <!-- Apply dark theme -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Betöltés - Hotcakes Tanfolyamkezelő</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            /* font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; */
+            /* Bootstrap will handle font-family via data-bs-theme */
+        }
+        .loading-container {
+            text-align: center;
+            padding: 2rem;
+        }
+        .spinner { /* Bootstrap spinner will be styled by theme */
+            width: 3rem;
+            height: 3rem;
+            margin-bottom: 1.5rem;
+        }
+        h1 {
+            /* color: #187ABA; */ /* Let theme handle color */
+            margin-bottom: 1rem;
+        }
+        /* p { color: #335574; } */ /* Let theme handle color */
+    </style>
+</head>
+<body>
+<div class="loading-container">
+    <div class="spinner-border text-primary spinner" role="status"> <!-- text-primary for accent -->
+        <span class="visually-hidden">Betöltés...</span>
+    </div>
+    <h1 class="text-primary">ALKALMAZÁS INDÍTÁSA</h1>
+    <p class="text-body-secondary">Kérjük várjon, amíg a Forró Torták Tanfolyamkezelő betöltődik...</p>
+</div>
+</body>
+</html>
