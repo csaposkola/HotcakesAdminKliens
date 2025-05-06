@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="hu" data-bs-theme="dark"> <!-- Apply dark theme -->
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,8 +12,8 @@
       justify-content: center;
       height: 100vh;
       margin: 0;
-      background-color: #f8f9fa;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      /* background-color: #f8f9fa; */ /* Theme handles this */
+      /* font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; */ /* Theme handles this */
     }
     .error-container {
       text-align: center;
@@ -22,45 +22,37 @@
     }
     .error-icon {
       font-size: 4rem;
-      color: #D3086F;
+      /* color: #D3086F; */ /* Use text-danger */
       margin-bottom: 1.5rem;
     }
-    h1 {
-      color: #187ABA;
-      margin-bottom: 1rem;
-    }
-    p {
-      color: #335574;
-      margin-bottom: 1.5rem;
-    }
-    .btn-primary {
-      background-color: #187ABA;
-      border-color: #187ABA;
-    }
-    .btn-primary:hover {
-      background-color: #0d6efd;
-      border-color: #0d6efd;
-    }
+    /* h1 { color: #187ABA; margin-bottom: 1rem; } */ /* Use text-primary */
+    /* p { color: #335574; margin-bottom: 1.5rem; } */ /* Use text-body-secondary */
+
+    /* .btn-primary { background-color: #187ABA; border-color: #187ABA; } */ /* Theme handles this */
+    /* .btn-primary:hover { background-color: #0d6efd; border-color: #0d6efd; } */ /* Theme handles this */
   </style>
 </head>
 <body>
 <div class="error-container">
-  <div class="error-icon">⚠️</div>
-  <h1>Hiba az alkalmazásban</h1>
-  <p>Sajnáljuk, az alkalmazás betöltése közben hiba történt. Az Express szerver valószínűleg nem indult el megfelelően.</p>
-  <div class="alert alert-info" role="alert">
+  <div class="error-icon text-danger">⚠️</div>
+  <h1 class="text-primary">Hiba az alkalmazásban</h1>
+  <p class="text-body-secondary">Sajnáljuk, az alkalmazás betöltése közben hiba történt. Az Express szerver valószínűleg nem indult el megfelelően.</p>
+  <div class="alert alert-info" role="alert"> <!-- alert-info should look fine in dark mode -->
     <strong>Technikai információ:</strong>
     <div id="error-message">A szerver nem válaszol.</div>
   </div>
-  <p>Kérjük, próbálja újraindítani az alkalmazást.</p>
+  <p class="text-body-secondary">Kérjük, próbálja újraindítani az alkalmazást.</p>
   <button class="btn btn-primary" onclick="window.location.reload()">Újrapróbálkozás</button>
 </div>
 
 <script>
   // This will receive error messages from the main process
-  if (window.electronAPI) {
+  // preload.js functionality seems minimal, this might not be actively used
+  // but kept for completeness.
+  if (window.electronAPI && window.electronAPI.onServerError) {
     window.electronAPI.onServerError(message => {
-      document.getElementById('error-message').textContent = message;
+      const errorMsgEl = document.getElementById('error-message');
+      if (errorMsgEl) errorMsgEl.textContent = message;
     });
   }
 </script>
