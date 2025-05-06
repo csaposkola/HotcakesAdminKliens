@@ -1,16 +1,13 @@
-/* public/style.css */
-
-/* --- Egyedi Betűtípusok --- */
 @font-face {
-    font-family: 'SajatBetutipus'; /* Választott név a betűtípus családnak */
-    src: url('fonts/SajatBetutipus-Regular.ttf') format('truetype');
-    font-weight: normal; /* vagy 400 */
+    font-family: 'MyFont';
+    src: url('fonts/regular.ttf') format('truetype');
+    font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
-    font-family: 'SajatBetutipus'; /* Ugyanaz a név! */
-    src: url('fonts/SajatBetutipus-Bold.ttf') format('truetype');
+    font-family: 'MyFont'; /* Ugyanaz a név! */
+    src: url('fonts/bold.ttf') format('truetype');
     font-weight: bold; /* vagy 700 */
     font-style: normal;
 }

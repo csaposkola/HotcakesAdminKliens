@@ -12,14 +12,53 @@ const PORT = 3000; // A helyi szerver portja
 // --- Middleware ---
 app.use(cors()); // Kérések engedélyezése a böngésző frontendről
 app.use(bodyParser.json()); // JSON kérés bodyk értelmezése
-app.use(express.static('public')); // Statikus fájlok (HTML, CSS, JS) kiszolgálása a 'public' mappából
+
+// Determine if we're running in production (electron packaged app)
+const isPackaged = process.type === 'renderer' || (process.resourcesPath && process.resourcesPath.toString().includes('app.asar'));
+console.log(`Running in ${isPackaged ? 'production' : 'development'} mode`);
 
 // --- Fájl elérési utak ---
-const SETTINGS_PATH = path.join(__dirname, 'settings.json');
-const TEMPLATES_PATH = path.join(__dirname, 'templates.json');
-const INVENTORY_MAP_PATH = path.join(__dirname, 'inventoryMap.json'); // Készlet leképezés fájl
+// Get the appropriate paths based on environment
+function getAppPath(filePath) {
+    if (isPackaged) {
+        // In packaged app, resources are in app.asar or separate directory
+        if (process.resourcesPath) {
+            return path.join(process.resourcesPath, 'app', filePath);
+        }
+    }
+    // In development, use current directory
+    return path.join(__dirname, filePath);
+}
+
+const SETTINGS_PATH = getAppPath('settings.json');
+const TEMPLATES_PATH = getAppPath('templates.json');
+const INVENTORY_MAP_PATH = getAppPath('inventoryMap.json'); // Készlet leképezés fájl
+const PUBLIC_PATH = getAppPath('public');
+
+console.log('Settings path:', SETTINGS_PATH);
+console.log('Templates path:', TEMPLATES_PATH);
+console.log('Inventory map path:', INVENTORY_MAP_PATH);
+console.log('Public path:', PUBLIC_PATH);
+
+// Serve static files from the resolved path
+app.use(express.static(PUBLIC_PATH));
 
 // --- Segédfüggvények (Fájlkezelés) ---
+
+// Helper function to make sure directory exists
+async function ensureDirectoryExists(filePath) {
+    const dirname = path.dirname(filePath);
+    try {
+        await fs.mkdir(dirname, { recursive: true });
+        return true;
+    } catch (err) {
+        if (err.code !== 'EEXIST') {
+            console.error('Error creating directory:', dirname, err);
+            return false;
+        }
+        return true;
+    }
+}
 
 // Beállítások olvasása
 async function getSettings() {
@@ -29,7 +68,14 @@ async function getSettings() {
     } catch (error) {
         if (error.code === 'ENOENT') {
             console.log('settings.json nem található, alapértelmezett értékek használata.');
-            return { apiKey: '', siteBaseUrl: '', defaultCategoryId: '' };
+            const defaultSettings = { apiKey: '', siteBaseUrl: '', defaultCategoryId: '' };
+            try {
+                await ensureDirectoryExists(SETTINGS_PATH);
+                await fs.writeFile(SETTINGS_PATH, JSON.stringify(defaultSettings, null, 2));
+            } catch (writeError) {
+                console.error('Hiba az alapértelmezett settings.json írása közben:', writeError);
+            }
+            return defaultSettings;
         }
         console.error('Hiba a settings.json olvasása közben:', error);
         throw new Error('Nem sikerült beolvasni a beállításokat.');
@@ -39,6 +85,7 @@ async function getSettings() {
 // Beállítások mentése
 async function saveSettings(settings) {
     try {
+        await ensureDirectoryExists(SETTINGS_PATH);
         await fs.writeFile(SETTINGS_PATH, JSON.stringify(settings, null, 2));
     } catch (error) {
         console.error('Hiba a settings.json írása közben:', error);
@@ -57,7 +104,12 @@ async function getTemplates() {
             const defaultTemplates = [
                 { templateId: "TPL-EXAMPLE-1H", name: "Példa Sablon (1óra)", baseSku: "TPL-EX-1H", durationHours: 1, defaultDescription: "Példa leírás", defaultPrice: 10000, defaultInventoryMode: 100 }
             ];
-            await fs.writeFile(TEMPLATES_PATH, JSON.stringify(defaultTemplates, null, 2));
+            try {
+                await ensureDirectoryExists(TEMPLATES_PATH);
+                await fs.writeFile(TEMPLATES_PATH, JSON.stringify(defaultTemplates, null, 2));
+            } catch (writeError) {
+                console.error('Hiba az alapértelmezett templates.json írása közben:', writeError);
+            }
             return defaultTemplates;
         }
         console.error('Hiba a templates.json olvasása közben:', error);
@@ -73,7 +125,14 @@ async function getInventoryMap() {
     } catch (error) {
         if (error.code === 'ENOENT') {
             console.log('inventoryMap.json nem található, üres objektummal tér vissza.');
-            return {};
+            const emptyMap = {};
+            try {
+                await ensureDirectoryExists(INVENTORY_MAP_PATH);
+                await fs.writeFile(INVENTORY_MAP_PATH, JSON.stringify(emptyMap, null, 2));
+            } catch (writeError) {
+                console.error('Hiba az üres inventoryMap.json írása közben:', writeError);
+            }
+            return emptyMap;
         }
         console.error('Hiba az inventoryMap.json olvasása közben:', error);
         return {}; // Visszatérés üres objektummal hiba esetén is
@@ -83,6 +142,7 @@ async function getInventoryMap() {
 // Készlet térkép mentése
 async function saveInventoryMap(map) {
     try {
+        await ensureDirectoryExists(INVENTORY_MAP_PATH);
         await fs.writeFile(INVENTORY_MAP_PATH, JSON.stringify(map, null, 2));
     } catch (error) {
         console.error('!!! HIBA az inventoryMap.json írása közben:', error);
@@ -137,6 +197,12 @@ async function makeRawApiRequest(endpoint, method = 'GET', requestBody = null) {
         socket.on('error', (e) => { console.error('Socket hiba:', e); reject(e); }); socket.setTimeout(30000); socket.on('timeout', () => { console.error('Socket időtúllépés'); socket.destroy(); reject(new Error('Kapcsolat időtúllépés')); });
     });
 }
+
+// Make sure all API routes serve JSON with proper content type
+app.use('/api/*', (req, res, next) => {
+    res.setHeader('Content-Type', 'application/json');
+    next();
+});
 
 // --- Szerver Végpontok (API a Frontendünk számára) ---
 
@@ -331,10 +397,42 @@ app.post('/api/templates', async (req, res) => {
     catch (error) { if (error instanceof SyntaxError) { console.error("Sablon mentési hiba: Érvénytelen JSON.", error); res.status(400).json({ error: `Érvénytelen JSON formátum: ${error.message}` }); } else { console.error("templates.json írási hiba:", error); res.status(500).json({ error: `Nem sikerült menteni a sablonokat: ${error.message}` }); } }
 });
 
+// Catch-all route for SPA handling
+app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api/')) {
+        res.sendFile(path.join(PUBLIC_PATH, 'index.html'));
+    } else {
+        next();
+    }
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Express error handler:', err);
+    res.status(500).json({
+        error: 'Szerver hiba történt',
+        message: err.message || 'Ismeretlen hiba'
+    });
+});
 
 // --- Szerver Indítása ---
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Szerver fut a http://localhost:${PORT} címen`);
-    console.log('Statikus fájlok kiszolgálása a ./public mappából');
+    console.log('Statikus fájlok kiszolgálása a', PUBLIC_PATH, 'mappából');
     console.log('Győződj meg róla, hogy van index.html a public mappában.');
+});
+
+// Handle graceful shutdown
+process.on('SIGINT', () => {
+    console.log('Szerver leállítása...');
+    server.close(() => {
+        console.log('Szerver leállítva');
+        process.exit(0);
+    });
+});
+
+// Handle unexpected errors to prevent crashes
+process.on('uncaughtException', (error) => {
+    console.error('Kezeletlen kivétel a szerverben:', error);
+    // Don't exit, let the server continue running if possible
 });
