@@ -1,0 +1,15 @@
+{
+  "Bvin": "prod-bvin-1",
+  "Sku": "MOCK-COURSE-01-202401011000",
+  "ProductName": "Mock Tanfolyam 1 (2024-01-01 10:00)",
+  "SitePrice": 15000,
+  "IsAvailableForSale": true,
+  "Status": 1,
+  "ShortDescription": "Részletes leírás mock tanfolyam 1-hez.",
+  "Keywords": "",
+  "MetaDescription": "",
+  "MetaKeywords": "",
+  "MetaTitle": "",
+  "StoreId": 1,
+  "LastUpdated": "2024-01-01T00:00:00Z"
+}
