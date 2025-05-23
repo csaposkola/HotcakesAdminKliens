@@ -2,6 +2,10 @@
 // VERY FIRST LINE FOR DEBUGGING:
 console.log('[Server] server.js script execution started.'); // THIS IS CRITICAL
 
+let server;
+let app// <--- DECLARE server HERE
+const PORT = 3000; // You can also define PORT here if it's static
+
 try { // Wrap almost everything to catch early synchronous errors
     const express = require('express');
     const cors = require('cors');
@@ -10,8 +14,7 @@ try { // Wrap almost everything to catch early synchronous errors
     const fs = require('fs').promises; // Promises használata aszinkron fájlműveletekhez
     const net = require('net'); // net modul használata raw socketekhez
 
-    const app = express();
-    const PORT = 3000; // A helyi szerver portja
+    app = express();
 
     // --- Middleware ---
     app.use(cors()); // Kérések engedélyezése a böngésző frontendről
@@ -164,7 +167,7 @@ try { // Wrap almost everything to catch early synchronous errors
         });
     }
 
-    app.use('/api/*', (req, res, next) => {
+    app.use('/api', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         next();
     });
@@ -343,7 +346,7 @@ try { // Wrap almost everything to catch early synchronous errors
         catch (error) { if (error instanceof SyntaxError) { console.error("[Server] Sablon mentési hiba: Érvénytelen JSON.", error); res.status(400).json({ error: `Érvénytelen JSON formátum: ${error.message}` }); } else { console.error("[Server] templates.json írási hiba:", error); res.status(500).json({ error: `Nem sikerült menteni a sablonokat: ${error.message}` }); } }
     });
 
-    app.get('*', (req, res, next) => {
+    app.get(/.*/, (req, res, next) => {
         if (!req.path.startsWith('/api/')) {
             res.sendFile(path.join(PUBLIC_PATH, 'index.html'));
         } else {
@@ -362,19 +365,30 @@ try { // Wrap almost everything to catch early synchronous errors
         });
     });
 
-    const serverInstance = app.listen(PORT, () => { // Renamed 'server' to 'serverInstance' to avoid conflict
-        console.log(`[Server] Express server running at http://localhost:${PORT}`);
-        console.log('[Server] Static files served from:', PUBLIC_PATH);
-        console.log(`Szerver fut a http://localhost:${PORT}`); // Explicitly log the expected string
-    });
+    let server; // Renamed to avoid confusion, this will hold the server instance if started
 
-    process.on('SIGINT', () => {
-        console.log('[Server] SIGINT received. Szerver leállítása...');
-        serverInstance.close(() => { // Use serverInstance here
-            console.log('[Server] Szerver leállítva');
-            process.exit(0);
+    // Condition for starting the server:
+    // 1. If it's the main module (run via `node server.js`)
+    // 2. OR if an environment variable `ELECTRON_RUNS_SERVER` is true (which main.js will set)
+    if (require.main === module || process.env.ELECTRON_RUNS_SERVER === 'true') {
+        server = app.listen(PORT, () => {
+            console.log(`[Server] Express server running at http://localhost:${PORT}`);
+            console.log('[Server] Static files served from:', PUBLIC_PATH);
+            console.log(`Szerver fut a http://localhost:${PORT}`); // Explicitly log the expected string
         });
-    });
+
+        process.on('SIGINT', () => {
+            console.log('[Server] SIGINT received. Szerver leállítása...');
+            if (server) { // Check if server is defined
+                server.close(() => {
+                    console.log('[Server] Szerver leállítva');
+                    process.exit(0);
+                });
+            } else {
+                process.exit(0); // Should not happen if server started and SIGINT is caught
+            }
+        });
+    }
 
 } catch (e) {
     console.error('[Server] FATAL INITIALIZATION ERROR in server.js:', e);
@@ -385,3 +399,5 @@ process.on('uncaughtException', (error) => {
     console.error('[Server] Kezeletlen kivétel a szerverben (uncaughtException):', error);
     process.exit(1); // It's generally safer to exit on uncaught exceptions.
 });
+
+module.exports = { app, serverInstance: server, PORT };
