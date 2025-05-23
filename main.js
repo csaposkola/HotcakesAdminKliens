@@ -48,6 +48,10 @@ function startServer() {
     console.log(`[Main] Server file found at: ${serverPath}. Spawning process...`);
 
     const nodeExecutable = 'node';
+    serverProcess = spawn(nodeExecutable, [serverPath], {
+        stdio: ['ignore', 'pipe', 'pipe'],
+        env: { ...process.env, ELECTRON_RUNS_SERVER: 'true' } // <<< ADD THIS LINE
+    });
     console.log(`[Main] Spawning: ${nodeExecutable} ${serverPath}`);
 
     serverProcess = spawn(nodeExecutable, [serverPath], {
